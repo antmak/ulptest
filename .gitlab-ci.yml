@@ -105,7 +105,7 @@ build_linux:
     - make install-strip
     - *dist_archive
 
-build_windows:
+.build_windows:
   stage: build
   image: $CI_DOCKER_REGISTRY/esp32-toolchain-win-cross
   tags:
@@ -132,7 +132,7 @@ build_windows:
     - make install-strip
     - *dist_archive
 
-build_macos:
+.build_macos:
   stage: build
   image: $CI_DOCKER_REGISTRY/osxcross
   tags:
