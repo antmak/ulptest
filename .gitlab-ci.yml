@@ -85,7 +85,7 @@ variables:
 # prefix should be like a $CI_PROJECT_NAME, but we cannot use variable here
 .release_tag_filter: &release_tag_filter
   only:
-    - /^v.*$/
+    - /^v[0-9]?.*$/
     - /^binutils-esp32ulp-.*$/
 
 .release_submit_action: &release_submit_action
