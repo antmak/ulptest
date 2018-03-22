@@ -43,7 +43,13 @@ variables:
   RELEASE_DESC: "New release"
 
 .get_release_name: &get_release_name |
-  REL_VERSION=$(git describe --tags | sed -n -r "s|${CI_PROJECT_NAME}-(.*)|\1|gp")
+  PREFX=${CI_PROJECT_NAME}
+
+  tmpVER=$( tmpTAG=$(git describe --tags | grep -E "^v[0-9]?") && ( echo $tmpTAG | sed -n -r "s|v(.*)|\1|gp" ) ) \
+    || tmpVER=$( tmpTAG=$(git describe --tags | grep -E "^${PREFX}-")  && ( echo $tmpTAG | sed -n -r "s|${PREFX}-(.*)|\1|gp" ) ) \
+    || exit 1
+
+  REL_VERSION=$tmpVER
   REL_NAME=${CI_PROJECT_NAME}-${PLATFORM_NAME}-${REL_VERSION}
   ARCHIVE_NAME=${REL_NAME}.${ARCHIVE_EXT}
   echo "PLATFORM_NAME: $PLATFORM_NAME"
@@ -77,7 +83,9 @@ variables:
   ${GH_TOOL} upload -s ${GITHUB_TOKEN} --tag ${GH_REL_TAG} -f ${DIST_ART_DIR}/${ARCHIVE_NAME} -n ${ARCHIVE_NAME}
 
 # like a $CI_PROJECT_NAME, but we cannot use variable here
-.release_tag_filter: &release_tag_filter /^binutils-esp32ulp-.*$/
+.release_tag_filter: &release_tag_filter |
+  /^binutils-esp32ulp-.*$/
+  /^v.*$/
 
 .release_submit_action: &release_submit_action
   when: manual
