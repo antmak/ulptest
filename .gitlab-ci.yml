@@ -82,10 +82,11 @@ variables:
   echo Release ${GH_REL_TAG}, file ${ARCHIVE_NAME}
   ${GH_TOOL} upload -s ${GITHUB_TOKEN} --tag ${GH_REL_TAG} -f ${DIST_ART_DIR}/${ARCHIVE_NAME} -n ${ARCHIVE_NAME}
 
-# like a $CI_PROJECT_NAME, but we cannot use variable here
-.release_tag_filter: &release_tag_filter |
-  /^binutils-esp32ulp-.*$/
-  /^v.*$/
+# prefix should be like a $CI_PROJECT_NAME, but we cannot use variable here
+.release_tag_filter: &release_tag_filter
+  only:
+    - /^v.*$/
+    - /^binutils-esp32ulp-.*$/
 
 .release_submit_action: &release_submit_action
   when: manual
@@ -173,9 +174,7 @@ push_master_to_github:
 
 get_gh_tools:
   stage: build
-  only:
-    - *release_tag_filter
-    # - master
+  <<: *release_tag_filter
   artifacts:
     paths:
       - ${DIST_ART_DIR}
@@ -188,8 +187,7 @@ get_gh_tools:
 
 release_tag_draft:
   stage: release_stage1
-  only:
-    - *release_tag_filter
+  <<: *release_tag_filter
   when: on_success
   script:
     - *add_gh_key_remote
@@ -208,8 +206,7 @@ release_tag_draft:
 
 Release_tag_submit:
   stage: release_submit
-  only:
-    - *release_tag_filter
+  <<: *release_tag_filter
   <<: *release_submit_action
   dependencies:
     - get_gh_tools
@@ -220,8 +217,7 @@ Release_tag_submit:
 
 Pre-Release_tag_submit:
   stage: release_submit
-  only:
-    - *release_tag_filter
+  <<: *release_tag_filter
   <<: *release_submit_action
   dependencies:
     - get_gh_tools
@@ -232,8 +228,7 @@ Pre-Release_tag_submit:
 
 Delete_tag_release:
   stage: release_submit
-  only:
-    - *release_tag_filter
+  <<: *release_tag_filter
   <<: *release_submit_action
   dependencies:
     - get_gh_tools
