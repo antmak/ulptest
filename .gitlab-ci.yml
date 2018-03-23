@@ -92,7 +92,7 @@ variables:
 
 before_script:
   - set -o errexit; set -o pipefail; set -o nounset
-  - [ ${SHELL_DEBUG:-""} ] && set -x
+  - test ${DEBUG_SHELL:-""} && set -x
 
 build_linux:
   stage: build
