@@ -114,7 +114,7 @@ build_linux:
     - ./configure --target=esp32ulp-elf --prefix=$PWD/$DIST_INSTALLED_DIR ${BINUTILS_CONFIGURE_OPTS}
     - echo "MAKEINFO = :" >> Makefile
     - make
-    - make install-strip
+    - MAKEFLAGS= make install-strip
     - *dist_archive
 
 build_windows:
@@ -141,7 +141,7 @@ build_windows:
     - ./configure --host=i686-w64-mingw32 --target=esp32ulp-elf --prefix=$PWD/$DIST_INSTALLED_DIR ${BINUTILS_CONFIGURE_OPTS} CC=i686-w64-mingw32-gcc
     - echo "MAKEINFO = :" >> Makefile
     - make
-    - make install-strip
+    - MAKEFLAGS= make install-strip
     - *dist_archive
 
 build_macos:
@@ -160,7 +160,7 @@ build_macos:
     - ./configure --host=x86_64-apple-darwin12 --target=esp32ulp-elf --prefix=$PWD/esp32ulp-elf-binutils ${BINUTILS_CONFIGURE_OPTS} CC=x86_64-apple-darwin12-cc
     - echo "MAKEINFO = :" >> Makefile
     - make
-    - make install-strip
+    - MAKEFLAGS= make install-strip
     - *dist_archive
 
 push_master_to_github:
