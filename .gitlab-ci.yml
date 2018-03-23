@@ -44,8 +44,9 @@ variables:
 
 .get_release_name: &get_release_name |
   PREFX=${CI_PROJECT_NAME}
-  tmpVER=$( tmpTAG=$(git describe --tags | grep -E "^v[0-9]") && ( echo $tmpTAG | sed -n -r "s|v(.*)|\1|gp" ) ) \
-    || tmpVER=$( tmpTAG=$(git describe --tags | grep -E "^${PREFX}-")  && ( echo $tmpTAG | sed -n -r "s|${PREFX}-(.*)|\1|gp" ) )
+  tmpVER=$( tmpTAG=$(git describe --tags | grep -E "^v[0-9]") && ( echo $tmpTAG | sed -n -r "s|v(.*)|\1|gp" ) ) || \
+    tmpVER=$( tmpTAG=$(git describe --tags | grep -E "^${PREFX}-")  && ( echo $tmpTAG | sed -n -r "s|${PREFX}-(.*)|\1|gp" ) ) || \
+      ( echo "There is not a correct tag"; exit 1 )
   REL_VERSION=$tmpVER
   REL_NAME=${CI_PROJECT_NAME}-${PLATFORM_NAME}-${REL_VERSION}
   ARCHIVE_NAME=${REL_NAME}.${ARCHIVE_EXT}
@@ -91,6 +92,7 @@ variables:
 
 before_script:
   - set -o errexit; set -o pipefail; set -o nounset
+  - [ ${SHELL_DEBUG:-""} ] && set -x
 
 build_linux:
   stage: build
@@ -111,7 +113,7 @@ build_linux:
     - make install-strip
     - *dist_archive
 
-.build_windows:
+build_windows:
   stage: build
   image: $CI_DOCKER_REGISTRY/esp32-toolchain-win-cross
   tags:
@@ -138,7 +140,7 @@ build_linux:
     - make install-strip
     - *dist_archive
 
-.build_macos:
+build_macos:
   stage: build
   image: $CI_DOCKER_REGISTRY/osxcross
   tags:
